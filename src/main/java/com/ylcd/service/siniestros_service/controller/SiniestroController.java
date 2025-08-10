@@ -3,6 +3,7 @@ package com.ylcd.service.siniestros_service.controller;
 import com.ylcd.service.siniestros_service.model.request.SiniestroRequest;
 import com.ylcd.service.siniestros_service.model.response.ResponseGeneralDto;
 import com.ylcd.service.siniestros_service.service.impl.SiniestroServiceImpl;
+import com.ylcd.service.siniestros_service.util.Constants;
 import com.ylcd.service.siniestros_service.util.SiniestroAdapter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -30,7 +31,7 @@ public class SiniestroController {
                     log.info("Siniestro registrado: {}", registrado);
                     return ResponseEntity.status(HttpStatus.CREATED)
                             .body(SiniestroAdapter.responseGeneral(
-                                    "201", HttpStatus.CREATED.value(),
+                                    Constants.HTTP_201, Constants.HTTP_201_code,
                                     "Siniestro registrado con éxito",
                                     registrado
                             ));
@@ -39,7 +40,7 @@ public class SiniestroController {
                     log.error("Error registrando siniestro: {}", error.getMessage(), error);
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(SiniestroAdapter.responseGeneral(
-                                    "500", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    Constants.HTTP_500, Constants.HTTP_500_code,
                                     "Error interno del servidor", error.getMessage()
                             )));
                 });
@@ -54,19 +55,19 @@ public class SiniestroController {
                     log.info("Siniestro encontrado: {}", siniestro);
                     return ResponseEntity.ok(
                             SiniestroAdapter.responseGeneral(
-                                    "200", HttpStatus.OK.value(), "Siniestro encontrado", siniestro
+                                    Constants.HTTP_200, Constants.HTTP_200_code, "Siniestro encontrado", siniestro
                             )
                     );
                 })
                 .defaultIfEmpty(ResponseEntity.status(HttpStatus.NOT_FOUND)
                         .body(SiniestroAdapter.responseGeneral(
-                                "404", HttpStatus.NOT_FOUND.value(), "Siniestro no encontrado", null
+                                Constants.HTTP_404, Constants.HTTP_404_code, "Siniestro no encontrado", null
                         )))
                 .onErrorResume(error -> {
                     log.error("Error al buscar siniestro {}: {}", id, error.getMessage(), error);
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(SiniestroAdapter.responseGeneral(
-                                    "500", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    Constants.HTTP_500, Constants.HTTP_500_code,
                                     "Error interno del servidor", error.getMessage()
                             )));
                 });
@@ -78,11 +79,11 @@ public class SiniestroController {
 
         log.debug("Listando siniestros por póliza: {}", polizaId);
 
-        // Validación manual
+
         if (polizaId == null || polizaId.trim().isEmpty()) {
             return Mono.just(ResponseEntity.status(HttpStatus.BAD_REQUEST)
                     .body(SiniestroAdapter.responseGeneral(
-                            "400", HttpStatus.BAD_REQUEST.value(),
+                            Constants.HTTP_400, Constants.HTTP_400_code,
                             "polizaId es requerido", null
                     )));
         }
@@ -93,14 +94,14 @@ public class SiniestroController {
                     if (lista.isEmpty()) {
                         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                                 .body(SiniestroAdapter.responseGeneral(
-                                        "404", HttpStatus.NOT_FOUND.value(),
+                                        Constants.HTTP_404, Constants.HTTP_404_code,
                                         "No se encontraron siniestros para la póliza " + polizaId,
                                         null
                                 ));
                     }
                     return ResponseEntity.ok(
                             SiniestroAdapter.responseGeneral(
-                                    "200", HttpStatus.OK.value(),
+                                    Constants.HTTP_200, Constants.HTTP_200_code,
                                     "Lista de siniestros encontrada", lista
                             )
                     );
@@ -109,7 +110,7 @@ public class SiniestroController {
                     log.error("Error al listar siniestros para póliza {}: {}", polizaId, error.getMessage(), error);
                     return Mono.just(ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                             .body(SiniestroAdapter.responseGeneral(
-                                    "500", HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                                    Constants.HTTP_500, Constants.HTTP_500_code,
                                     "Error interno del servidor", error.getMessage()
                             )));
                 });
