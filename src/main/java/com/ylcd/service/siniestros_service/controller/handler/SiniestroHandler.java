@@ -6,6 +6,7 @@ import com.ylcd.service.siniestros_service.service.impl.SiniestroServiceImpl;
 import com.ylcd.service.siniestros_service.util.Constants;
 import com.ylcd.service.siniestros_service.util.SiniestroAdapter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.codec.DecodingException;
 import org.springframework.http.HttpStatus;
 
 import org.springframework.http.MediaType;
@@ -27,6 +28,7 @@ public class SiniestroHandler {
 
     public Mono<ServerResponse> registrar(ServerRequest request) {
         return request.bodyToMono(SiniestroRequest.class)
+                .switchIfEmpty(Mono.error(new IllegalArgumentException("El cuerpo de la solicitud está vacío")))
                 .flatMap(siniestro -> {
                     log.debug("Registrando siniestro: {}", siniestro);
                     return service.registrarSiniestro(siniestro)
@@ -36,15 +38,32 @@ public class SiniestroHandler {
                                     .bodyValue(SiniestroAdapter.responseGeneral(
                                             Constants.HTTP_201, Constants.HTTP_201_code,
                                             "Siniestro registrado con éxito", registrado
-                                    )))
-                            .onErrorResume(error -> ServerResponse
-                                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                                    .contentType(MediaType.APPLICATION_JSON)
-                                    .bodyValue(SiniestroAdapter.responseGeneral(
-                                            Constants.HTTP_500, Constants.HTTP_500_code,
-                                            "Error interno del servidor", error.getMessage()
                                     )));
-                });
+                })
+                .onErrorResume(IllegalArgumentException.class, e ->
+                        ServerResponse.status(HttpStatus.BAD_REQUEST)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(SiniestroAdapter.responseGeneral(
+                                        Constants.HTTP_400, Constants.HTTP_400_code,
+                                        "Solicitud inválida", e.getMessage()
+                                ))
+                )
+                .onErrorResume(DecodingException.class, e ->
+                        ServerResponse.status(HttpStatus.BAD_REQUEST)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(SiniestroAdapter.responseGeneral(
+                                        Constants.HTTP_400, Constants.HTTP_400_code,
+                                        "Error de formato en la solicitud", e.getMessage()
+                                ))
+                )
+                .onErrorResume(error ->
+                        ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(SiniestroAdapter.responseGeneral(
+                                        Constants.HTTP_500, Constants.HTTP_500_code,
+                                        "Error interno del servidor", error.getMessage()
+                                ))
+                );
     }
 
     public Mono<ServerResponse> obtenerPorId(ServerRequest request) {
