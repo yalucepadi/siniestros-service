@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: siniestros-service
+
+pacifico:
+  polizas:
+    # Base URL del servicio de pólizas (sin path /polizas, el config lo añade)
+    base-url: http://localhost:8080
+
+logging:
+  level:
+    com.pacifico: DEBUG
