@@ -1,6 +1,6 @@
 package com.ylcd.service.siniestros_service.service.impl;
 
-import com.ylcd.service.siniestros_service.config.WebClientConfig;
+
 import com.ylcd.service.siniestros_service.model.request.Dto.PolizaDto;
 import com.ylcd.service.siniestros_service.model.request.SiniestroRequest;
 import com.ylcd.service.siniestros_service.service.SiniestroService;
