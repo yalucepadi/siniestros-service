@@ -1,17 +1,16 @@
 package com.ylcd.service.siniestros_service.service.impl;
 
+import com.ylcd.service.siniestros_service.config.WebClientConfig;
 import com.ylcd.service.siniestros_service.model.request.Dto.PolizaDto;
 import com.ylcd.service.siniestros_service.model.request.SiniestroRequest;
 import com.ylcd.service.siniestros_service.service.SiniestroService;
-import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
-
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -19,12 +18,9 @@ import java.util.Optional;
 public class SiniestroServiceImpl implements SiniestroService {
 
     private final Map<String, SiniestroRequest> siniestros = new HashMap<>();
-    private WebClient polizasClient;
 
-
-    public void SiniestroService(WebClient.Builder builder) {
-        this.polizasClient = builder.baseUrl("http://localhost:8080/api/polizas").build();
-    }
+    @Qualifier("polizasWebClient")
+    private final WebClient polizasClient;
 
     public SiniestroServiceImpl(WebClient webClient) {
         this.polizasClient = webClient;
