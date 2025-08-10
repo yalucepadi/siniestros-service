@@ -1,5 +1,7 @@
 package com.ylcd.service.siniestros_service.controller;
 
+import com.ylcd.service.siniestros_service.controller.handler.SiniestroHandler;
+import com.ylcd.service.siniestros_service.controller.router.SiniestroRouter;
 import com.ylcd.service.siniestros_service.model.request.SiniestroRequest;
 import com.ylcd.service.siniestros_service.model.response.ResponseGeneralDto;
 import com.ylcd.service.siniestros_service.service.impl.SiniestroServiceImpl;
@@ -24,8 +26,9 @@ import static org.mockito.ArgumentMatchers.eq;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-@WebFluxTest(SiniestroController.class)
-class SiniestroControllerTest {
+@WebFluxTest(controllers = {SiniestroRouter.class, SiniestroHandler.class})
+
+class SiniestroRouterTest {
 
     @Autowired
     private WebTestClient webTestClient;
